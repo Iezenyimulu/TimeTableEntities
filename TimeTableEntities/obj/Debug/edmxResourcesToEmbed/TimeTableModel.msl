@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="TimetTableGeneratorStoreContainer" CdmEntityContainer="TimeTableEntities">
+    <EntitySetMapping Name="Periods">
+      <EntityTypeMapping TypeName="TimetTableGenerator.Period">
+        <MappingFragment StoreEntitySet="period">
+          <ScalarProperty Name="End" ColumnName="End" />
+          <ScalarProperty Name="Start" ColumnName="Start" />
+          <ScalarProperty Name="PeriodId" ColumnName="PeriodId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Schedules">
+      <EntityTypeMapping TypeName="TimetTableGenerator.Schedule">
+        <MappingFragment StoreEntitySet="schedule">
+          <ScalarProperty Name="Elective" ColumnName="Elective" />
+          <ScalarProperty Name="Day" ColumnName="Day" />
+          <ScalarProperty Name="Period" ColumnName="Period" />
+          <ScalarProperty Name="Subject" ColumnName="Subject" />
+          <ScalarProperty Name="Teacher" ColumnName="Teacher" />
+          <ScalarProperty Name="Class" ColumnName="Class" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Subjects">
+      <EntityTypeMapping TypeName="TimetTableGenerator.Subject">
+        <MappingFragment StoreEntitySet="subject">
+          <ScalarProperty Name="Elective" ColumnName="Elective" />
+          <ScalarProperty Name="PeriodPerWeek" ColumnName="PeriodPerWeek" />
+          <ScalarProperty Name="Alias" ColumnName="Alias" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Electives">
+      <EntityTypeMapping TypeName="TimetTableGenerator.Elective">
+        <MappingFragment StoreEntitySet="elective">
+          <ScalarProperty Name="Teacher" ColumnName="Teacher" />
+          <ScalarProperty Name="Subject" ColumnName="Subject" />
+          <ScalarProperty Name="Code" ColumnName="Code" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

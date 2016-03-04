@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="TimetTableGenerator.Store" Provider="MySql.Data.MySqlClient" ProviderManifestToken="5.7" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="elective">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Code" Type="varchar" MaxLength="20" />
+          <Property Name="Subject" Type="varchar" MaxLength="45" />
+          <Property Name="Teacher" Type="varchar" MaxLength="60" />
+        </EntityType>
+        <EntityType Name="period">
+          <Key>
+            <PropertyRef Name="PeriodId" />
+          </Key>
+          <Property Name="PeriodId" Type="int" Nullable="false" />
+          <Property Name="Start" Type="varchar" MaxLength="45" />
+          <Property Name="End" Type="varchar" MaxLength="45" />
+        </EntityType>
+        <EntityType Name="schedule">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Class" Type="varchar" MaxLength="45" />
+          <Property Name="Teacher" Type="varchar" MaxLength="45" />
+          <Property Name="Subject" Type="varchar" MaxLength="10" />
+          <Property Name="Period" Type="int" />
+          <Property Name="Day" Type="varchar" MaxLength="45" />
+          <Property Name="Elective" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="subject">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="60" Nullable="false" />
+          <Property Name="Alias" Type="varchar" MaxLength="10" />
+          <Property Name="PeriodPerWeek" Type="int" />
+          <Property Name="Elective" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <Association Name="periodId_schedule_FK">
+          <End Role="period" Type="Self.period" Multiplicity="0..1" />
+          <End Role="schedule" Type="Self.schedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="period">
+              <PropertyRef Name="PeriodId" />
+            </Principal>
+            <Dependent Role="schedule">
+              <PropertyRef Name="Period" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'subjectAlias_schedule_FK' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="subjectAlias_schedule_FK" />-->
+        <EntityContainer Name="TimetTableGeneratorStoreContainer">
+          <EntitySet Name="elective" EntityType="Self.elective" Schema="timetable" store:Type="Tables" />
+          <EntitySet Name="period" EntityType="Self.period" Schema="timetable" store:Type="Tables" />
+          <EntitySet Name="schedule" EntityType="Self.schedule" Schema="timetable" store:Type="Tables" />
+          <EntitySet Name="subject" EntityType="Self.subject" Schema="timetable" store:Type="Tables" />
+          <AssociationSet Name="periodId_schedule_FK" Association="Self.periodId_schedule_FK">
+            <End Role="period" EntitySet="period" />
+            <End Role="schedule" EntitySet="schedule" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="TimetTableGenerator" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="TimeTableEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Periods" EntityType="TimetTableGenerator.Period" />
+          <EntitySet Name="Schedules" EntityType="TimetTableGenerator.Schedule" />
+          <EntitySet Name="Subjects" EntityType="TimetTableGenerator.Subject" />
+          <AssociationSet Name="periodId_schedule_FK" Association="TimetTableGenerator.periodId_schedule_FK">
+            <End Role="Period" EntitySet="Periods" />
+            <End Role="schedule" EntitySet="Schedules" />
+          </AssociationSet>
+          <EntitySet Name="Electives" EntityType="TimetTableGenerator.Elective" />
+          </EntityContainer>
+        <EntityType Name="Period">
+          <Key>
+            <PropertyRef Name="PeriodId" />
+          </Key>
+          <Property Name="PeriodId" Type="Int32" Nullable="false" />
+          <Property Name="Start" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="End" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Schedules" Relationship="TimetTableGenerator.periodId_schedule_FK" FromRole="Period" ToRole="schedule" />
+        </EntityType>
+        <EntityType Name="Schedule">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Class" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="Teacher" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="Subject" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Period" Type="Int32" />
+          <Property Name="Day" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="Elective" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Periods" Relationship="TimetTableGenerator.periodId_schedule_FK" FromRole="schedule" ToRole="Period" />
+        </EntityType>
+        <EntityType Name="Subject">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="60" FixedLength="false" Unicode="false" />
+          <Property Name="Alias" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="PeriodPerWeek" Type="Int32" />
+          <Property Name="Elective" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="periodId_schedule_FK">
+          <End Type="TimetTableGenerator.Period" Role="Period" Multiplicity="0..1" />
+          <End Type="TimetTableGenerator.Schedule" Role="schedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Period">
+              <PropertyRef Name="PeriodId" />
+            </Principal>
+            <Dependent Role="schedule">
+              <PropertyRef Name="Period" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Elective">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Code" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Subject" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="Teacher" Type="String" MaxLength="60" FixedLength="false" Unicode="false" />
+        </EntityType>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="TimetTableGeneratorStoreContainer" CdmEntityContainer="TimeTableEntities">
+          <EntitySetMapping Name="Periods">
+            <EntityTypeMapping TypeName="TimetTableGenerator.Period">
+              <MappingFragment StoreEntitySet="period">
+                <ScalarProperty Name="End" ColumnName="End" />
+                <ScalarProperty Name="Start" ColumnName="Start" />
+                <ScalarProperty Name="PeriodId" ColumnName="PeriodId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Schedules">
+            <EntityTypeMapping TypeName="TimetTableGenerator.Schedule">
+              <MappingFragment StoreEntitySet="schedule">
+                <ScalarProperty Name="Elective" ColumnName="Elective" />
+                <ScalarProperty Name="Day" ColumnName="Day" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="Teacher" ColumnName="Teacher" />
+                <ScalarProperty Name="Class" ColumnName="Class" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subjects">
+            <EntityTypeMapping TypeName="TimetTableGenerator.Subject">
+              <MappingFragment StoreEntitySet="subject">
+                <ScalarProperty Name="Elective" ColumnName="Elective" />
+                <ScalarProperty Name="PeriodPerWeek" ColumnName="PeriodPerWeek" />
+                <ScalarProperty Name="Alias" ColumnName="Alias" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Electives">
+            <EntityTypeMapping TypeName="TimetTableGenerator.Elective">
+              <MappingFragment StoreEntitySet="elective">
+                <ScalarProperty Name="Teacher" ColumnName="Teacher" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Default" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
