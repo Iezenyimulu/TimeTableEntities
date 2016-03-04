@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="TimetTableGenerator" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="TimeTableEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Periods" EntityType="TimetTableGenerator.Period" />
+    <EntitySet Name="Schedules" EntityType="TimetTableGenerator.Schedule" />
+    <EntitySet Name="Subjects" EntityType="TimetTableGenerator.Subject" />
+    <AssociationSet Name="periodId_schedule_FK" Association="TimetTableGenerator.periodId_schedule_FK">
+      <End Role="Period" EntitySet="Periods" />
+      <End Role="schedule" EntitySet="Schedules" />
+    </AssociationSet>
+    <EntitySet Name="Electives" EntityType="TimetTableGenerator.Elective" />
+  </EntityContainer>
+  <EntityType Name="Period">
+    <Key>
+      <PropertyRef Name="PeriodId" />
+    </Key>
+    <Property Name="PeriodId" Type="Int32" Nullable="false" />
+    <Property Name="Start" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="End" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Schedules" Relationship="TimetTableGenerator.periodId_schedule_FK" FromRole="Period" ToRole="schedule" />
+  </EntityType>
+  <EntityType Name="Schedule">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Class" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Teacher" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Subject" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="Period" Type="Int32" />
+    <Property Name="Day" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Elective" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Periods" Relationship="TimetTableGenerator.periodId_schedule_FK" FromRole="schedule" ToRole="Period" />
+  </EntityType>
+  <EntityType Name="Subject">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="60" FixedLength="false" Unicode="false" />
+    <Property Name="Alias" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="PeriodPerWeek" Type="Int32" />
+    <Property Name="Elective" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <Association Name="periodId_schedule_FK">
+    <End Type="TimetTableGenerator.Period" Role="Period" Multiplicity="0..1" />
+    <End Type="TimetTableGenerator.Schedule" Role="schedule" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Period">
+        <PropertyRef Name="PeriodId" />
+      </Principal>
+      <Dependent Role="schedule">
+        <PropertyRef Name="Period" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="Elective">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" />
+    <Property Name="Code" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="Subject" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Teacher" Type="String" MaxLength="60" FixedLength="false" Unicode="false" />
+  </EntityType>
+</Schema>

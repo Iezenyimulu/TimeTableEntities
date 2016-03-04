@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="TimetTableGenerator.Store" Provider="MySql.Data.MySqlClient" ProviderManifestToken="5.7" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="elective">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" />
+    <Property Name="Code" Type="varchar" MaxLength="20" />
+    <Property Name="Subject" Type="varchar" MaxLength="45" />
+    <Property Name="Teacher" Type="varchar" MaxLength="60" />
+  </EntityType>
+  <EntityType Name="period">
+    <Key>
+      <PropertyRef Name="PeriodId" />
+    </Key>
+    <Property Name="PeriodId" Type="int" Nullable="false" />
+    <Property Name="Start" Type="varchar" MaxLength="45" />
+    <Property Name="End" Type="varchar" MaxLength="45" />
+  </EntityType>
+  <EntityType Name="schedule">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Class" Type="varchar" MaxLength="45" />
+    <Property Name="Teacher" Type="varchar" MaxLength="45" />
+    <Property Name="Subject" Type="varchar" MaxLength="10" />
+    <Property Name="Period" Type="int" />
+    <Property Name="Day" Type="varchar" MaxLength="45" />
+    <Property Name="Elective" Type="varchar" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="subject">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="varchar" MaxLength="60" Nullable="false" />
+    <Property Name="Alias" Type="varchar" MaxLength="10" />
+    <Property Name="PeriodPerWeek" Type="int" />
+    <Property Name="Elective" Type="varchar" MaxLength="20" />
+  </EntityType>
+  <Association Name="periodId_schedule_FK">
+    <End Role="period" Type="Self.period" Multiplicity="0..1" />
+    <End Role="schedule" Type="Self.schedule" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="period">
+        <PropertyRef Name="PeriodId" />
+      </Principal>
+      <Dependent Role="schedule">
+        <PropertyRef Name="Period" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <!--Errors Found During Generation:
+warning 6035: The relationship 'subjectAlias_schedule_FK' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="subjectAlias_schedule_FK" />-->
+  <EntityContainer Name="TimetTableGeneratorStoreContainer">
+    <EntitySet Name="elective" EntityType="Self.elective" Schema="timetable" store:Type="Tables" />
+    <EntitySet Name="period" EntityType="Self.period" Schema="timetable" store:Type="Tables" />
+    <EntitySet Name="schedule" EntityType="Self.schedule" Schema="timetable" store:Type="Tables" />
+    <EntitySet Name="subject" EntityType="Self.subject" Schema="timetable" store:Type="Tables" />
+    <AssociationSet Name="periodId_schedule_FK" Association="Self.periodId_schedule_FK">
+      <End Role="period" EntitySet="period" />
+      <End Role="schedule" EntitySet="schedule" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
