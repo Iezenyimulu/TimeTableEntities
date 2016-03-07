@@ -41,6 +41,7 @@
     <Property Name="Alias" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
     <Property Name="PeriodPerWeek" Type="Int32" />
     <Property Name="Elective" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="IsScience" Type="Boolean" />
   </EntityType>
   <Association Name="periodId_schedule_FK">
     <End Type="TimetTableGenerator.Period" Role="Period" Multiplicity="0..1" />

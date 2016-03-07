@@ -38,6 +38,7 @@
     <Property Name="Alias" Type="varchar" MaxLength="10" />
     <Property Name="PeriodPerWeek" Type="int" />
     <Property Name="Elective" Type="varchar" MaxLength="20" />
+    <Property Name="IsScience" Type="bit" />
   </EntityType>
   <Association Name="periodId_schedule_FK">
     <End Role="period" Type="Self.period" Multiplicity="0..1" />

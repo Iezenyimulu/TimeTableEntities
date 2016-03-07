@@ -828,6 +828,30 @@ namespace TimeTableEntities
         private global::System.String _Elective;
         partial void OnElectiveChanging(global::System.String value);
         partial void OnElectiveChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Boolean> IsScience
+        {
+            get
+            {
+                return _IsScience;
+            }
+            set
+            {
+                OnIsScienceChanging(value);
+                ReportPropertyChanging("IsScience");
+                _IsScience = StructuralObject.SetValidValue(value, "IsScience");
+                ReportPropertyChanged("IsScience");
+                OnIsScienceChanged();
+            }
+        }
+        private Nullable<global::System.Boolean> _IsScience;
+        partial void OnIsScienceChanging(Nullable<global::System.Boolean> value);
+        partial void OnIsScienceChanged();
 
         #endregion
 

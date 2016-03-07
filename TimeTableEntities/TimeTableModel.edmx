@@ -43,6 +43,7 @@
           <Property Name="Alias" Type="varchar" MaxLength="10" />
           <Property Name="PeriodPerWeek" Type="int" />
           <Property Name="Elective" Type="varchar" MaxLength="20" />
+          <Property Name="IsScience" Type="bit" />
         </EntityType>
         <Association Name="periodId_schedule_FK">
           <End Role="period" Type="Self.period" Multiplicity="0..1" />
@@ -114,6 +115,7 @@ warning 6035: The relationship 'subjectAlias_schedule_FK' has columns that are n
           <Property Name="Alias" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="PeriodPerWeek" Type="Int32" />
           <Property Name="Elective" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="IsScience" Type="Boolean" />
         </EntityType>
         <Association Name="periodId_schedule_FK">
           <End Type="TimetTableGenerator.Period" Role="Period" Multiplicity="0..1" />
@@ -167,6 +169,7 @@ warning 6035: The relationship 'subjectAlias_schedule_FK' has columns that are n
           <EntitySetMapping Name="Subjects">
             <EntityTypeMapping TypeName="TimetTableGenerator.Subject">
               <MappingFragment StoreEntitySet="subject">
+                <ScalarProperty Name="IsScience" ColumnName="IsScience" />
                 <ScalarProperty Name="Elective" ColumnName="Elective" />
                 <ScalarProperty Name="PeriodPerWeek" ColumnName="PeriodPerWeek" />
                 <ScalarProperty Name="Alias" ColumnName="Alias" />

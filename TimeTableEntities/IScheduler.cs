@@ -10,9 +10,9 @@ namespace TimeTableEntities {
         IEnumerable<Schedule> GetSchedule();
         IEnumerable<Schedule> GetSubjectSchedule(string subject);
         IEnumerable<Schedule> GetTeacherSchedule(string teacher);
-
-        ValidationModel AddSchedule(Schedule schedule);
-        ValidationModel EditSchedule(Schedule schedule);
+        
+        ValidationModel AddSchedule(ScheduleModel schedule);
+        ValidationModel EditSchedule(ScheduleModel schedule);
  
         void DeleteSchedule(Schedule schedule);
                
