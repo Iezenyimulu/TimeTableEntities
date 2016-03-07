@@ -26,6 +26,7 @@
     <EntitySetMapping Name="Subjects">
       <EntityTypeMapping TypeName="TimetTableGenerator.Subject">
         <MappingFragment StoreEntitySet="subject">
+          <ScalarProperty Name="IsScience" ColumnName="IsScience" />
           <ScalarProperty Name="Elective" ColumnName="Elective" />
           <ScalarProperty Name="PeriodPerWeek" ColumnName="PeriodPerWeek" />
           <ScalarProperty Name="Alias" ColumnName="Alias" />
