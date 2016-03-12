@@ -10,6 +10,8 @@
         <EntityTypeShape EntityType="TimetTableGenerator.Subject" Width="1.5" PointX="7.625" PointY="0.875" />
         <AssociationConnector Association="TimetTableGenerator.periodId_schedule_FK" />
         <EntityTypeShape EntityType="TimetTableGenerator.Elective" Width="1.5" PointX="4.125" PointY="3.625" />
+        <EntityTypeShape EntityType="TimetTableGenerator.ClassSubject" Width="1.5" PointX="2.125" PointY="3.5" />
+        <EntityTypeShape EntityType="TimetTableGenerator.Class" Width="1.5" PointX="6" PointY="3.875" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

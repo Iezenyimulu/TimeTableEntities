@@ -14,10 +14,9 @@ namespace TimeTableEntities {
         static Dictionary<string, List<int>> doublePeriods;
         static List<Schedule> schedules = new List<Schedule>();
 
-        public static void FindAvailableTime(TimeTableEntities db, ScheduleModel schedule) {
-            //if (schedule.PeriodPerWeek > 1) {
+        public static void FindAvailableTime(TimeTableDb db, ScheduleModel schedule) {
+           
                 var onePeriod = schedule.PeriodPerWeek % 2;
-                //Dictionary<int, Tuple<string, string, string, string, string>> vacancy = new Dictionary<int, Tuple<string, string, string, string, string>>();
                 Dictionary<string, List<int>> vacancy = new Dictionary<string, List<int>>();
 
                 var temp = new List<int>();
@@ -32,7 +31,7 @@ namespace TimeTableEntities {
                     }
                     if (temp.Count > 0) {
                         temp.Sort();
-                        vacancy.Add(day, temp);
+                        vacancy.Add(day, new List<int>(temp));
                         temp.Clear();
                     }
                 }
@@ -52,19 +51,19 @@ namespace TimeTableEntities {
             foreach (var day in vacancy) {
                 foreach (var period in day.Value) {
                     var first = period;
-                    //subsequent period found means the first period is added to double period
+                    //subsequent period (+1)found means a second  is available. first period is added to double period
                     if (day.Value.Contains(first + 1))
                         tempD.Add(first);
-                    //if (onePeriod) 
+                    //any period is added as/to single period
                     tempS.Add(first);
                 }
                 if (tempD.Count > 0) {
                     tempD.Sort();
-                    doublePeriods.Add(day.Key, tempD);
+                    doublePeriods.Add(day.Key, new List<int>(tempD));
                 }
                 if (tempS.Count > 0) {
                     tempS.Sort();
-                    singlePeriod.Add(day.Key, tempS);
+                    singlePeriod.Add(day.Key, new List<int>(tempS));
                 }
 
                 tempS.Clear();
@@ -73,200 +72,129 @@ namespace TimeTableEntities {
         }
 
 
-        private static void FindOptimumTime(TimeTableEntities db, ScheduleModel schedule) {
+        private static void FindOptimumTime(TimeTableDb db, ScheduleModel schedule) {
+            var scheduled = false;
+            
             var numberofDoublePeriods = 0;
-            var onePeriod = schedule.PeriodPerWeek % 2;
+            int onePeriod = schedule.PeriodPerWeek % 2;
             var periodPerWeek = schedule.PeriodPerWeek;
-            while (schedule.PeriodPerWeek / 2 > 1) {
+            int k = schedule.PeriodPerWeek  ;
+            while (k  > 1) {
                 numberofDoublePeriods++;
+                k /= 2;
             }
-            //onePeriod > 0 || schedule.PeriodPerWeek == 1
             bool isScience = ((from s in db.Subjects
                                where s.Alias == schedule.Subject
                                select s.IsScience).FirstOrDefault()) ?? false;
 
             if (numberofDoublePeriods > 0) {
-                for (var i = 0; i < numberofDoublePeriods; i++) {
+                for (var i = numberofDoublePeriods; i > 0; i--) {
+                    scheduled = false;
                     foreach (var item in doublePeriods) {
+                        if (scheduled)
+                            break;
                         var periodList = (item.Value);
                         if (!isScience)
                             periodList.Reverse();
                         foreach (var period in periodList) {
                             schedule.Day = item.Key;
-
-                            BookDoublePeriods(db, schedule, period);
+                           
+                            scheduled  = BookDoublePeriods(db, schedule, period);
+                            if (scheduled) {
+                                item.Value.Remove(period);
+                                break;
+                            }
                         }
                     }
                 }
             }
             if (onePeriod > 0 || schedule.PeriodPerWeek == 1) {
-                foreach (var item in doublePeriods) {
+                scheduled = false;
+                foreach (var item in singlePeriod) {
                     var periodList = (item.Value);
                     if (!isScience)
                         periodList.Reverse();
-                    foreach (var period in periodList) {
+                    foreach (var period in periodList) {                       
                         schedule.Day = item.Key;
 
-                        BookSinglePeriod(db, schedule, period);
+                        scheduled = BookSinglePeriod(db, schedule, period);
+                        if (scheduled) {
+                            break;
+                        }
                     }
+                    if (scheduled)
+                        break;
                 }
             }
 
 
         }
 
-        private static void BookDoublePeriods(TimeTableEntities db, ScheduleModel schedule, int period) {
+        private static bool BookDoublePeriods(TimeTableDb db, ScheduleModel schedule, int period) {
+            var scheduled = false;
 
-            switch (period) {
-                case 1:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule)) {
-                        schedule.Period = period + 1;
-                        if (Validation.ValidateTeacher(db, schedule)) {
-                            schedule.Period = period;
-                            AddScheduleToList(schedule);
-                            schedule.Period = period + 1;
-                            AddScheduleToList(schedule);
-                        }
-                    }
-                    break;
-                case 2:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule)) {
-                        schedule.Period = period + 1;
-                        if (Validation.ValidateTeacher(db, schedule)) {
-                            schedule.Period = period;
-                            AddScheduleToList(schedule);
-                            schedule.Period = period + 1;
-                            AddScheduleToList(schedule);
-                        }
-                    }
-                    break;
+                    var first = period;
+                    var second = period + 1;
+                    schedule.Period = first;
+            //validate subject. validate first and second periods and teacher for those  period
+                    if (Validation.ValidateSubject(db, schedule)) {
+                        if (Validation.ValidatePeriod(db, schedule)) {
+                            if (Validation.ValidateTeacher(db, schedule)) {
 
-                case 3:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule)) {
-                        schedule.Period = period + 1;
-                        if (Validation.ValidateTeacher(db, schedule)) {
-                            schedule.Period = period;
-                            AddScheduleToList(schedule);
-                            schedule.Period = period + 1;
-                            AddScheduleToList(schedule);
+                                schedule.Period = second;
+                                if (Validation.ValidatePeriod(db, schedule)) {
+                                    if (Validation.ValidateTeacher(db, schedule)) {
+                                        schedule.Period = first;
+                                        AddScheduleToList(
+                                             new ScheduleModel {
+                                                 Class = schedule.Class,
+                                                 Teacher = schedule.Teacher,
+                                                 Day = schedule.Day,
+                                                 Elective = schedule.Elective,
+                                                 Subject = schedule.Subject,
+                                                 Period = first
+                                             });
+                                        //second period
+                                        AddScheduleToList(
+                                            new ScheduleModel {
+                                                Class = schedule.Class,
+                                                Teacher = schedule.Teacher,
+                                                Day = schedule.Day,
+                                                Elective = schedule.Elective,
+                                                Subject = schedule.Subject,
+                                                Period = second
+                                            });
+                                        scheduled = true;
+                                    }
+                                }
+                            }
                         }
                     }
-                    break;
-                case 4:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule)) {
-                        schedule.Period = period + 1;
-                        if (Validation.ValidateTeacher(db, schedule)) {
-                            schedule.Period = period;
-                            AddScheduleToList(schedule);
-                            schedule.Period = period + 1;
-                            AddScheduleToList(schedule);
-                        }
-                    }
-                    break;
-                case 5:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule)) {
-                        schedule.Period = period + 1;
-                        if (Validation.ValidateTeacher(db, schedule)) {
-                            schedule.Period = period;
-                            AddScheduleToList(schedule);
-                            schedule.Period = period + 1;
-                            AddScheduleToList(schedule);
-                        }
-                    }
-                    break;
-                case 7:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule)) {
-                        schedule.Period = period + 1;
-                        if (Validation.ValidateTeacher(db, schedule)) {
-                            schedule.Period = period;
-                            AddScheduleToList(schedule);
-                            schedule.Period = period + 1;
-                            AddScheduleToList(schedule);
-                        }
-                    }
-                    break;
-
-                case 8:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule)) {
-                        schedule.Period = period + 1;
-                        if (Validation.ValidateTeacher(db, schedule)) {
-                            schedule.Period = period;
-                            AddScheduleToList(schedule);
-                            schedule.Period = period + 1;
-                            AddScheduleToList(schedule);
-                        }
-                    }
-                    break;
-                case 9:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule)) {
-                        schedule.Period = period + 1;
-                        if (Validation.ValidateTeacher(db, schedule)) {
-                            schedule.Period = period;
-                            AddScheduleToList(schedule);
-                            schedule.Period = period + 1;
-                            AddScheduleToList(schedule);
-                        }
-                    }
-                    break;
-
-            }
+          
+            return scheduled;
         }
 
 
-        private static void BookSinglePeriod(TimeTableEntities db, ScheduleModel schedule, int period) {
+        private static bool BookSinglePeriod(TimeTableDb db, ScheduleModel schedule, int period) {
+            var scheduled = false;
 
-            switch (period) {
-                case 1:
                     schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule))
-                        AddScheduleToList(schedule);
-                    break;
-                case 2:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule))
-                        AddScheduleToList(schedule);
-                    break;
-
-                case 3:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule))
-                        AddScheduleToList(schedule);
-                    break;
-                case 4:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule))
-                        AddScheduleToList(schedule);
-                    break;
-                case 5:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule))
-                        AddScheduleToList(schedule);
-                    break;
-                case 7:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule))
-                        AddScheduleToList(schedule);
-                    break;
-
-                case 8:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule))
-                        AddScheduleToList(schedule);
-                    break;
-                case 9:
-                    schedule.Period = period;
-                    if (Validation.ValidateTeacher(db, schedule))
-                        AddScheduleToList(schedule);
-                    break;
-            }
+                    if (Validation.ValidateSubject(db, schedule)) {
+                        if (Validation.ValidatePeriod(db, schedule)) {
+                            if (Validation.ValidateTeacher(db, schedule)) {
+                                AddScheduleToList(new ScheduleModel {
+                                    Class = schedule.Class,
+                                    Teacher = schedule.Teacher,
+                                    Day = schedule.Day,
+                                    Elective = schedule.Elective,
+                                    Subject = schedule.Subject,
+                                    Period = period
+                                });
+                                scheduled = true;
+                            }
+                        }
+                    }
+                    return scheduled;
         }
 
 

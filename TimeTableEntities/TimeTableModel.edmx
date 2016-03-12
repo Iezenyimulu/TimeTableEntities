@@ -5,6 +5,25 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="TimetTableGenerator.Store" Provider="MySql.Data.MySqlClient" ProviderManifestToken="5.7" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="class">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="45" />
+          <Property Name="Category" Type="varchar" MaxLength="45" />
+        </EntityType>
+        <EntityType Name="classsubject">
+          <Key>
+            <PropertyRef Name="Category" />
+            <PropertyRef Name="Subject" />
+            <PropertyRef Name="Level" />
+          </Key>
+          <Property Name="Category" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="Subject" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="PeriodPerWeek" Type="int" />
+          <Property Name="Level" Type="varchar" MaxLength="5" Nullable="false" />
+        </EntityType>
         <EntityType Name="elective">
           <Key>
             <PropertyRef Name="Id" />
@@ -41,7 +60,6 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="60" Nullable="false" />
           <Property Name="Alias" Type="varchar" MaxLength="10" />
-          <Property Name="PeriodPerWeek" Type="int" />
           <Property Name="Elective" Type="varchar" MaxLength="20" />
           <Property Name="IsScience" Type="bit" />
         </EntityType>
@@ -61,6 +79,8 @@
 warning 6035: The relationship 'subjectAlias_schedule_FK' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
         <Association Name="subjectAlias_schedule_FK" />-->
         <EntityContainer Name="TimetTableGeneratorStoreContainer">
+          <EntitySet Name="class" EntityType="Self.class" Schema="timetable" store:Type="Tables" />
+          <EntitySet Name="classsubject" EntityType="Self.classsubject" Schema="timetable" store:Type="Tables" />
           <EntitySet Name="elective" EntityType="Self.elective" Schema="timetable" store:Type="Tables" />
           <EntitySet Name="period" EntityType="Self.period" Schema="timetable" store:Type="Tables" />
           <EntitySet Name="schedule" EntityType="Self.schedule" Schema="timetable" store:Type="Tables" />
@@ -74,7 +94,7 @@ warning 6035: The relationship 'subjectAlias_schedule_FK' has columns that are n
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="TimetTableGenerator" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityContainer Name="TimeTableEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="TimeTableDb" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Periods" EntityType="TimetTableGenerator.Period" />
           <EntitySet Name="Schedules" EntityType="TimetTableGenerator.Schedule" />
           <EntitySet Name="Subjects" EntityType="TimetTableGenerator.Subject" />
@@ -83,6 +103,8 @@ warning 6035: The relationship 'subjectAlias_schedule_FK' has columns that are n
             <End Role="schedule" EntitySet="Schedules" />
           </AssociationSet>
           <EntitySet Name="Electives" EntityType="TimetTableGenerator.Elective" />
+          <EntitySet Name="ClassSubjects" EntityType="TimetTableGenerator.ClassSubject" />
+          <EntitySet Name="Classes" EntityType="TimetTableGenerator.Class" />
           </EntityContainer>
         <EntityType Name="Period">
           <Key>
@@ -113,7 +135,6 @@ warning 6035: The relationship 'subjectAlias_schedule_FK' has columns that are n
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="60" FixedLength="false" Unicode="false" />
           <Property Name="Alias" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="PeriodPerWeek" Type="Int32" />
           <Property Name="Elective" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="IsScience" Type="Boolean" />
         </EntityType>
@@ -138,12 +159,31 @@ warning 6035: The relationship 'subjectAlias_schedule_FK' has columns that are n
           <Property Name="Subject" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
           <Property Name="Teacher" Type="String" MaxLength="60" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="ClassSubject">
+          <Key>
+            <PropertyRef Name="Subject" />
+            <PropertyRef Name="Category" />
+            <PropertyRef Name="Level" />
+          </Key>
+          <Property Name="Subject" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="PeriodPerWeek" Type="Int32" />
+          <Property Name="Category" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="Level" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Class">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="Category" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="TimetTableGeneratorStoreContainer" CdmEntityContainer="TimeTableEntities">
+        <EntityContainerMapping StorageEntityContainer="TimetTableGeneratorStoreContainer" CdmEntityContainer="TimeTableDb">
           <EntitySetMapping Name="Periods">
             <EntityTypeMapping TypeName="TimetTableGenerator.Period">
               <MappingFragment StoreEntitySet="period">
@@ -171,7 +211,6 @@ warning 6035: The relationship 'subjectAlias_schedule_FK' has columns that are n
               <MappingFragment StoreEntitySet="subject">
                 <ScalarProperty Name="IsScience" ColumnName="IsScience" />
                 <ScalarProperty Name="Elective" ColumnName="Elective" />
-                <ScalarProperty Name="PeriodPerWeek" ColumnName="PeriodPerWeek" />
                 <ScalarProperty Name="Alias" ColumnName="Alias" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -184,6 +223,25 @@ warning 6035: The relationship 'subjectAlias_schedule_FK' has columns that are n
                 <ScalarProperty Name="Teacher" ColumnName="Teacher" />
                 <ScalarProperty Name="Subject" ColumnName="Subject" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ClassSubjects">
+            <EntityTypeMapping TypeName="TimetTableGenerator.ClassSubject">
+              <MappingFragment StoreEntitySet="classsubject">
+                <ScalarProperty Name="Level" ColumnName="Level" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="PeriodPerWeek" ColumnName="PeriodPerWeek" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Classes">
+            <EntityTypeMapping TypeName="TimetTableGenerator.Class">
+              <MappingFragment StoreEntitySet="class">
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

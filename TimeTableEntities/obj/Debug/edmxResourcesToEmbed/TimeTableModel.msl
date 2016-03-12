@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-  <EntityContainerMapping StorageEntityContainer="TimetTableGeneratorStoreContainer" CdmEntityContainer="TimeTableEntities">
+  <EntityContainerMapping StorageEntityContainer="TimetTableGeneratorStoreContainer" CdmEntityContainer="TimeTableDb">
     <EntitySetMapping Name="Periods">
       <EntityTypeMapping TypeName="TimetTableGenerator.Period">
         <MappingFragment StoreEntitySet="period">
@@ -28,7 +28,6 @@
         <MappingFragment StoreEntitySet="subject">
           <ScalarProperty Name="IsScience" ColumnName="IsScience" />
           <ScalarProperty Name="Elective" ColumnName="Elective" />
-          <ScalarProperty Name="PeriodPerWeek" ColumnName="PeriodPerWeek" />
           <ScalarProperty Name="Alias" ColumnName="Alias" />
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="Id" ColumnName="Id" />
@@ -41,6 +40,25 @@
           <ScalarProperty Name="Teacher" ColumnName="Teacher" />
           <ScalarProperty Name="Subject" ColumnName="Subject" />
           <ScalarProperty Name="Code" ColumnName="Code" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ClassSubjects">
+      <EntityTypeMapping TypeName="TimetTableGenerator.ClassSubject">
+        <MappingFragment StoreEntitySet="classsubject">
+          <ScalarProperty Name="Level" ColumnName="Level" />
+          <ScalarProperty Name="Category" ColumnName="Category" />
+          <ScalarProperty Name="PeriodPerWeek" ColumnName="PeriodPerWeek" />
+          <ScalarProperty Name="Subject" ColumnName="Subject" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Classes">
+      <EntityTypeMapping TypeName="TimetTableGenerator.Class">
+        <MappingFragment StoreEntitySet="class">
+          <ScalarProperty Name="Category" ColumnName="Category" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="Id" ColumnName="Id" />
         </MappingFragment>
       </EntityTypeMapping>

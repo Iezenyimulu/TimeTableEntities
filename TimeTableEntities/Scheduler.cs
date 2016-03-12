@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace TimeTableEntities {
     public class Scheduler : IScheduler, IDisposable {
 
-        TimeTableEntities db = new TimeTableEntities();
+        TimeTableDb db = new TimeTableDb();
         public static List<ScheduleModel> ScheduleList= new List<ScheduleModel>() ;
 
        public IEnumerable<Schedule> GetSchedule() {
@@ -35,7 +35,12 @@ namespace TimeTableEntities {
             Tuple<bool, ValidationModel> validated = Validation.ValidateSchedule(db, scheduleModel);
             if (validated.Item1) {
                 Booking.FindAvailableTime(db, scheduleModel);
-                UpdateSchedule(CloneSchedule());
+                foreach (var s in ScheduleList) {
+                    UpdateSchedule(CloneSchedule(s));
+                }
+
+                db.SaveChanges();
+                ScheduleList.Clear();
             }
             return validated.Item2;
         }
@@ -46,22 +51,25 @@ namespace TimeTableEntities {
                 Tuple<bool, ValidationModel> validated = Validation.ValidateSchedule(db, scheduleModel);
             if (validated.Item1) {
                 Booking.FindAvailableTime(db, scheduleModel);
-                UpdateSchedule(CloneSchedule(), true);
+                UpdateSchedule(CloneSchedule(scheduleModel), true);
+
+                db.SaveChanges();
             }
             return validated.Item2;
         }
 
 
-       private Schedule CloneSchedule() {
+       private Schedule CloneSchedule(ScheduleModel s) {
            var schedule = new Schedule();
-           foreach (var s in ScheduleList) {
+          
                schedule.Id = s.Id;
                schedule.Class = s.Class;
                schedule.Day = s.Day;
                schedule.Elective = s.Elective;
                schedule.Period = s.Period;
                schedule.Subject = s.Subject;
-           }
+               schedule.Teacher = s.Teacher;
+           
 
            return schedule;
        }
@@ -82,13 +90,10 @@ namespace TimeTableEntities {
                                     select e).ToList();
                    foreach (var e in electives) {
                        //existing.Elective = schedule.Elective;
-                       existing.Subject = e.Subject;
+                       //existing.Subject = e.Subject;
                        existing.Teacher = e.Teacher;
-                       db.SaveChanges();
                    }
                }
-
-               db.SaveChanges();
            }
            // add new schedule
            else {
@@ -102,13 +107,13 @@ namespace TimeTableEntities {
                        electiveSubject.Day = schedule.Day;
                        electiveSubject.Elective = schedule.Elective;
                        electiveSubject.Period = schedule.Period;
-                       electiveSubject.Subject = e.Subject;
+                       electiveSubject.Subject = schedule.Subject; //e.Subject;
                        electiveSubject.Teacher = e.Teacher;
                        db.Schedules.AddObject(electiveSubject);
                    }
                }
                else
-                   db.Schedules.AddObject(schedule);
+                   db.Schedules.AddObject(schedule);               
            }
        }
 

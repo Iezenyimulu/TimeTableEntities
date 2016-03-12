@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Schema Namespace="TimetTableGenerator" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-  <EntityContainer Name="TimeTableEntities" annotation:LazyLoadingEnabled="true">
+  <EntityContainer Name="TimeTableDb" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="Periods" EntityType="TimetTableGenerator.Period" />
     <EntitySet Name="Schedules" EntityType="TimetTableGenerator.Schedule" />
     <EntitySet Name="Subjects" EntityType="TimetTableGenerator.Subject" />
@@ -9,6 +9,8 @@
       <End Role="schedule" EntitySet="Schedules" />
     </AssociationSet>
     <EntitySet Name="Electives" EntityType="TimetTableGenerator.Elective" />
+    <EntitySet Name="ClassSubjects" EntityType="TimetTableGenerator.ClassSubject" />
+    <EntitySet Name="Classes" EntityType="TimetTableGenerator.Class" />
   </EntityContainer>
   <EntityType Name="Period">
     <Key>
@@ -39,7 +41,6 @@
     <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="Name" Type="String" Nullable="false" MaxLength="60" FixedLength="false" Unicode="false" />
     <Property Name="Alias" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-    <Property Name="PeriodPerWeek" Type="Int32" />
     <Property Name="Elective" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
     <Property Name="IsScience" Type="Boolean" />
   </EntityType>
@@ -63,5 +64,24 @@
     <Property Name="Code" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
     <Property Name="Subject" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
     <Property Name="Teacher" Type="String" MaxLength="60" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="ClassSubject">
+    <Key>
+      <PropertyRef Name="Subject" />
+      <PropertyRef Name="Category" />
+      <PropertyRef Name="Level" />
+    </Key>
+    <Property Name="Subject" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="PeriodPerWeek" Type="Int32" />
+    <Property Name="Category" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Level" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="Class">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Category" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
   </EntityType>
 </Schema>
