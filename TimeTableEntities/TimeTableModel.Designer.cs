@@ -30,32 +30,32 @@ namespace TimeTableEntities
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
-    public partial class TimeTableEntities : ObjectContext
+    public partial class TimeTableDb : ObjectContext
     {
         #region Constructors
     
         /// <summary>
-        /// Initializes a new TimeTableEntities object using the connection string found in the 'TimeTableEntities' section of the application configuration file.
+        /// Initializes a new TimeTableDb object using the connection string found in the 'TimeTableDb' section of the application configuration file.
         /// </summary>
-        public TimeTableEntities() : base("name=TimeTableEntities", "TimeTableEntities")
+        public TimeTableDb() : base("name=TimeTableDb", "TimeTableDb")
         {
             this.ContextOptions.LazyLoadingEnabled = true;
             OnContextCreated();
         }
     
         /// <summary>
-        /// Initialize a new TimeTableEntities object.
+        /// Initialize a new TimeTableDb object.
         /// </summary>
-        public TimeTableEntities(string connectionString) : base(connectionString, "TimeTableEntities")
+        public TimeTableDb(string connectionString) : base(connectionString, "TimeTableDb")
         {
             this.ContextOptions.LazyLoadingEnabled = true;
             OnContextCreated();
         }
     
         /// <summary>
-        /// Initialize a new TimeTableEntities object.
+        /// Initialize a new TimeTableDb object.
         /// </summary>
-        public TimeTableEntities(EntityConnection connection) : base(connection, "TimeTableEntities")
+        public TimeTableDb(EntityConnection connection) : base(connection, "TimeTableDb")
         {
             this.ContextOptions.LazyLoadingEnabled = true;
             OnContextCreated();
@@ -134,6 +134,38 @@ namespace TimeTableEntities
             }
         }
         private ObjectSet<Elective> _Electives;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<ClassSubject> ClassSubjects
+        {
+            get
+            {
+                if ((_ClassSubjects == null))
+                {
+                    _ClassSubjects = base.CreateObjectSet<ClassSubject>("ClassSubjects");
+                }
+                return _ClassSubjects;
+            }
+        }
+        private ObjectSet<ClassSubject> _ClassSubjects;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<Class> Classes
+        {
+            get
+            {
+                if ((_Classes == null))
+                {
+                    _Classes = base.CreateObjectSet<Class>("Classes");
+                }
+                return _Classes;
+            }
+        }
+        private ObjectSet<Class> _Classes;
 
         #endregion
 
@@ -170,6 +202,22 @@ namespace TimeTableEntities
         {
             base.AddObject("Electives", elective);
         }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the ClassSubjects EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToClassSubjects(ClassSubject classSubject)
+        {
+            base.AddObject("ClassSubjects", classSubject);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the Classes EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToClasses(Class @class)
+        {
+            base.AddObject("Classes", @class);
+        }
 
         #endregion
 
@@ -178,6 +226,248 @@ namespace TimeTableEntities
     #endregion
 
     #region Entities
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="TimetTableGenerator", Name="Class")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class Class : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new Class object.
+        /// </summary>
+        /// <param name="id">Initial value of the Id property.</param>
+        public static Class CreateClass(global::System.Int32 id)
+        {
+            Class @class = new Class();
+            @class.Id = id;
+            return @class;
+        }
+
+        #endregion
+
+        #region Simple Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 Id
+        {
+            get
+            {
+                return _Id;
+            }
+            set
+            {
+                if (_Id != value)
+                {
+                    OnIdChanging(value);
+                    ReportPropertyChanging("Id");
+                    _Id = StructuralObject.SetValidValue(value, "Id");
+                    ReportPropertyChanged("Id");
+                    OnIdChanged();
+                }
+            }
+        }
+        private global::System.Int32 _Id;
+        partial void OnIdChanging(global::System.Int32 value);
+        partial void OnIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String Name
+        {
+            get
+            {
+                return _Name;
+            }
+            set
+            {
+                OnNameChanging(value);
+                ReportPropertyChanging("Name");
+                _Name = StructuralObject.SetValidValue(value, true, "Name");
+                ReportPropertyChanged("Name");
+                OnNameChanged();
+            }
+        }
+        private global::System.String _Name;
+        partial void OnNameChanging(global::System.String value);
+        partial void OnNameChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String Category
+        {
+            get
+            {
+                return _Category;
+            }
+            set
+            {
+                OnCategoryChanging(value);
+                ReportPropertyChanging("Category");
+                _Category = StructuralObject.SetValidValue(value, true, "Category");
+                ReportPropertyChanged("Category");
+                OnCategoryChanged();
+            }
+        }
+        private global::System.String _Category;
+        partial void OnCategoryChanging(global::System.String value);
+        partial void OnCategoryChanged();
+
+        #endregion
+
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="TimetTableGenerator", Name="ClassSubject")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class ClassSubject : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new ClassSubject object.
+        /// </summary>
+        /// <param name="subject">Initial value of the Subject property.</param>
+        /// <param name="category">Initial value of the Category property.</param>
+        /// <param name="level">Initial value of the Level property.</param>
+        public static ClassSubject CreateClassSubject(global::System.String subject, global::System.String category, global::System.String level)
+        {
+            ClassSubject classSubject = new ClassSubject();
+            classSubject.Subject = subject;
+            classSubject.Category = category;
+            classSubject.Level = level;
+            return classSubject;
+        }
+
+        #endregion
+
+        #region Simple Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String Subject
+        {
+            get
+            {
+                return _Subject;
+            }
+            set
+            {
+                if (_Subject != value)
+                {
+                    OnSubjectChanging(value);
+                    ReportPropertyChanging("Subject");
+                    _Subject = StructuralObject.SetValidValue(value, false, "Subject");
+                    ReportPropertyChanged("Subject");
+                    OnSubjectChanged();
+                }
+            }
+        }
+        private global::System.String _Subject;
+        partial void OnSubjectChanging(global::System.String value);
+        partial void OnSubjectChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Int32> PeriodPerWeek
+        {
+            get
+            {
+                return _PeriodPerWeek;
+            }
+            set
+            {
+                OnPeriodPerWeekChanging(value);
+                ReportPropertyChanging("PeriodPerWeek");
+                _PeriodPerWeek = StructuralObject.SetValidValue(value, "PeriodPerWeek");
+                ReportPropertyChanged("PeriodPerWeek");
+                OnPeriodPerWeekChanged();
+            }
+        }
+        private Nullable<global::System.Int32> _PeriodPerWeek;
+        partial void OnPeriodPerWeekChanging(Nullable<global::System.Int32> value);
+        partial void OnPeriodPerWeekChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String Category
+        {
+            get
+            {
+                return _Category;
+            }
+            set
+            {
+                if (_Category != value)
+                {
+                    OnCategoryChanging(value);
+                    ReportPropertyChanging("Category");
+                    _Category = StructuralObject.SetValidValue(value, false, "Category");
+                    ReportPropertyChanged("Category");
+                    OnCategoryChanged();
+                }
+            }
+        }
+        private global::System.String _Category;
+        partial void OnCategoryChanging(global::System.String value);
+        partial void OnCategoryChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String Level
+        {
+            get
+            {
+                return _Level;
+            }
+            set
+            {
+                if (_Level != value)
+                {
+                    OnLevelChanging(value);
+                    ReportPropertyChanging("Level");
+                    _Level = StructuralObject.SetValidValue(value, false, "Level");
+                    ReportPropertyChanged("Level");
+                    OnLevelChanged();
+                }
+            }
+        }
+        private global::System.String _Level;
+        partial void OnLevelChanging(global::System.String value);
+        partial void OnLevelChanged();
+
+        #endregion
+
+    }
     
     /// <summary>
     /// No Metadata Documentation available.
@@ -780,30 +1070,6 @@ namespace TimeTableEntities
         private global::System.String _Alias;
         partial void OnAliasChanging(global::System.String value);
         partial void OnAliasChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
-        [DataMemberAttribute()]
-        public Nullable<global::System.Int32> PeriodPerWeek
-        {
-            get
-            {
-                return _PeriodPerWeek;
-            }
-            set
-            {
-                OnPeriodPerWeekChanging(value);
-                ReportPropertyChanging("PeriodPerWeek");
-                _PeriodPerWeek = StructuralObject.SetValidValue(value, "PeriodPerWeek");
-                ReportPropertyChanged("PeriodPerWeek");
-                OnPeriodPerWeekChanged();
-            }
-        }
-        private Nullable<global::System.Int32> _PeriodPerWeek;
-        partial void OnPeriodPerWeekChanging(Nullable<global::System.Int32> value);
-        partial void OnPeriodPerWeekChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
