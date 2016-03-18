@@ -30,6 +30,53 @@ namespace TimeTableEntities {
             return teacherSchedule;
         }
 
+
+        public ScheduleModel GetSchedule(int id) {
+            if (id > 0) {
+                var schedule = (from s in db.Schedules
+                                where s.Id == id
+                                select s).FirstOrDefault();
+
+                var level = "";
+                if (schedule.Class.Substring(0, 1).ToUpper() == "S") {
+                    level = schedule.Class.Substring(0, 3);
+
+                    if (level.ToUpper() == "SS2" || level.ToUpper() == "SS3")
+                        level = "SS";
+                }
+                else if (schedule.Class.Substring(0, 1).ToUpper() == "J")
+                    level = "JS";
+
+                var category = (from c in db.Classes
+                                where c.Name.ToLower() == schedule.Class.ToLower()
+                                select c.Category).FirstOrDefault();
+
+                string subject = (from s in db.Subjects
+                                  where s.Alias == schedule.Subject
+                                  select s.Name).FirstOrDefault();
+
+
+                var periodPerWeek = (from c in db.ClassSubjects
+                                     where c.Subject.ToLower() == subject.ToLower() &&
+                                        c.Level == level &&
+                                        c.Category.ToLower() == category.ToLower()
+                                     select c.PeriodPerWeek).FirstOrDefault();
+
+                return new ScheduleModel {
+                    Class = schedule.Class,
+                    Teacher = schedule.Teacher,
+                    Elective = schedule.Elective,
+                    Day = schedule.Day,
+                    Subject = schedule.Subject,
+                    PeriodPerWeek = periodPerWeek ?? 0
+                };
+            }
+
+            return new ScheduleModel();
+
+        }
+
+
         public ValidationModel AddSchedule(ScheduleModel scheduleModel) {
 
             Tuple<bool, ValidationModel> validated = Validation.ValidateSchedule(db, scheduleModel);

@@ -32,17 +32,19 @@ namespace TimeTableEntities {
             //check that subject does not exceed number of period per week           
 
             if (schedule.PeriodPerWeek > 0) {
-                var level = schedule.Class.Substring(0, 3);
+                var level = "";
+                if (schedule.Class.Substring(0,1).ToUpper() == "S") {
+                    level = schedule.Class.Substring(0, 3);
 
-                switch (level.ToUpper()) {
-                    case "SS2":
-                    case "SS3":
-                        level = "SS"; break;
+                    if (level.ToUpper() == "SS2" || level.ToUpper() == "SS3")
+                        level = "SS";
                 }
+                else if (schedule.Class.Substring(0, 1).ToUpper() == "J")
+                    level = "JS";
 
                 var category = (from c in db.Classes
-                               where c.Name == schedule.Class
-                               select c.Category).FirstOrDefault().ToLower();
+                                where c.Name.ToLower() == schedule.Class.ToLower()
+                                select c.Category).FirstOrDefault();
 
                 string subject = "";
                 ValidateSubject(db, schedule, out subject);
@@ -56,7 +58,7 @@ namespace TimeTableEntities {
                 var maxPeriodPerWeek = (from c in db.ClassSubjects
                                         where c.Subject.ToLower() == subject.ToLower() &&
                                            c.Level == level &&
-                                           c.Category.ToLower() == category
+                                           c.Category.ToLower() == category.ToLower()
                                         select c.PeriodPerWeek).FirstOrDefault();
 
                 var bookedPeriod = 0;
@@ -125,7 +127,7 @@ namespace TimeTableEntities {
             var teacherBooked = schedules.Exists(s => s.Teacher.ToLower() == schedule.Teacher.ToLower() &&
                                        s.Period == schedule.Period &&
                                        s.Day.ToLower() == schedule.Day.ToLower() &&
-                                      (s.Class.ToLower() != schedule.Class .ToLower()&&s.Class.ToLower() == schedule.Class.ToLower()));
+                                      (s.Class.ToLower() != schedule.Class .ToLower() || s.Class.ToLower() == schedule.Class.ToLower()));
             if (teacherBooked) {
                 //validation.Id = "Teacher"; validation.Message = "Has been scheduled for this period";
                 return false;
